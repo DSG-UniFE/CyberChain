@@ -1,0 +1,193 @@
+# Copyright IBM Corp. All Rights Reserved.
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+version: '2'
+
+volumes:
+  orderer.papernet.com:
+  peer0.orgGw1.papernet.com:
+  peer0.orgGw2.papernet.com:
+  peer0.orgGw3.papernet.com:
+
+  peer0.orgGw4.papernet.com:
+  peer0.orgGw5.papernet.com:
+  peer0.orgGw6.papernet.com:
+  peer0.orgGw7.papernet.com:
+  peer0.orgGw8.papernet.com:
+  peer0.orgGw9.papernet.com:
+  peer0.orgGw10.papernet.com:
+
+  peer0.orgCtrl.papernet.com:
+  peer0.orgAgent.papernet.com:
+
+networks:
+  papernet:
+
+
+services:
+
+  orderer.papernet.com:
+    extends:
+      file:   base/docker-compose-base.yaml
+      service: orderer.papernet.com
+    container_name: orderer.papernet.com
+    networks:
+      - papernet
+
+
+  peer0.orgGw1.papernet.com:
+    container_name: peer0.orgGw1.papernet.com
+    extends:
+      file:  base/docker-compose-base.yaml
+      service: peer0.orgGw1.papernet.com
+    networks:
+      - papernet
+
+
+  peer0.orgGw2.papernet.com:
+    container_name: peer0.orgGw2.papernet.com
+    extends:
+      file:  base/docker-compose-base.yaml
+      service: peer0.orgGw2.papernet.com
+    networks:
+      - papernet
+
+
+  peer0.orgGw3.papernet.com:
+    container_name: peer0.orgGw3.papernet.com
+    extends:
+      file:  base/docker-compose-base.yaml
+      service: peer0.orgGw3.papernet.com
+    networks:
+      - papernet
+
+
+
+  peer0.orgGw4.papernet.com:
+    container_name: peer0.orgGw4.papernet.com
+    extends:
+      file:  base/docker-compose-base.yaml
+      service: peer0.orgGw4.papernet.com
+    networks:
+      - papernet
+
+
+  peer0.orgGw5.papernet.com:
+    container_name: peer0.orgGw5.papernet.com
+    extends:
+      file:  base/docker-compose-base.yaml
+      service: peer0.orgGw5.papernet.com
+    networks:
+      - papernet
+
+
+
+  peer0.orgGw6.papernet.com:
+    container_name: peer0.orgGw6.papernet.com
+    extends:
+      file:  base/docker-compose-base.yaml
+      service: peer0.orgGw6.papernet.com
+    networks:
+      - papernet
+
+
+  peer0.orgGw7.papernet.com:
+    container_name: peer0.orgGw7.papernet.com
+    extends:
+      file:  base/docker-compose-base.yaml
+      service: peer0.orgGw7.papernet.com
+    networks:
+      - papernet
+
+
+  peer0.orgGw8.papernet.com:
+    container_name: peer0.orgGw8.papernet.com
+    extends:
+      file:  base/docker-compose-base.yaml
+      service: peer0.orgGw8.papernet.com
+    networks:
+      - papernet
+
+
+
+  peer0.orgGw9.papernet.com:
+    container_name: peer0.orgGw9.papernet.com
+    extends:
+      file:  base/docker-compose-base.yaml
+      service: peer0.orgGw9.papernet.com
+    networks:
+      - papernet
+
+
+
+
+  peer0.orgGw10.papernet.com:
+    container_name: peer0.orgGw10.papernet.com
+    extends:
+      file:  base/docker-compose-base.yaml
+      service: peer0.orgGw10.papernet.com
+    networks:
+      - papernet
+
+
+
+
+
+
+  peer0.orgCtrl.papernet.com:
+    container_name: peer0.orgCtrl.papernet.com
+    extends:
+      file:  base/docker-compose-base.yaml
+      service: peer0.orgCtrl.papernet.com
+    networks:
+      - papernet
+
+
+
+  peer0.orgAgent.papernet.com:
+    container_name: peer0.orgAgent.papernet.com
+    extends:
+      file:  base/docker-compose-base.yaml
+      service: peer0.orgAgent.papernet.com
+    networks:
+      - papernet
+
+
+
+
+
+
+
+
+  cli:
+    container_name: cli
+    image: hyperledger/fabric-tools:$IMAGE_TAG
+    tty: true
+    stdin_open: true
+    environment:
+      - GOPATH=/opt/gopath
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      #- FABRIC_LOGGING_SPEC=DEBUG
+      - FABRIC_LOGGING_SPEC=INFO
+      - CORE_PEER_ID=cli
+      - CORE_PEER_ADDRESS=peer0.orgGw1.papernet.com:7051
+      - CORE_PEER_LOCALMSPID=OrgGw1MSP
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_TLS_CERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/orgGw1.papernet.com/peers/peer0.orgGw1.papernet.com/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/orgGw1.papernet.com/peers/peer0.orgGw1.papernet.com/tls/server.key
+      - CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/orgGw1.papernet.com/peers/peer0.orgGw1.papernet.com/tls/ca.crt
+      - CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/orgGw1.papernet.com/users/Admin@orgGw1.papernet.com/msp
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
+    command: /bin/bash
+    volumes:
+        - /var/run/:/host/var/run/
+        - ./chaincode/:/opt/gopath/src/github.com/chaincode
+        - ../../go/src/github.com/go-ping/ping/:/opt/gopath/src/github.com/go-ping/ping/
+        - ../../go/src/golang.org/:/opt/gopath/src/golang.org/
+        - ./crypto-config:/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/
+        - ./scripts:/opt/gopath/src/github.com/hyperledger/fabric/peer/scripts/
+        - ./channel-artifacts:/opt/gopath/src/github.com/hyperledger/fabric/peer/channel-artifacts
+    networks:
+      - papernet

@@ -1,0 +1,363 @@
+# Copyright IBM Corp. All Rights Reserved.
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+version: '2'
+
+services:
+
+  orderer.papernet.com:
+    container_name: orderer.papernet.com
+    extends:
+      file: peer-base.yaml
+      service: orderer-base
+    volumes:
+        - ../channel-artifacts/genesisRaft.block:/var/hyperledger/orderer/orderer.genesisRaft.block
+        - ../crypto-config/ordererOrganizations/papernet.com/orderers/orderer.papernet.com/msp:/var/hyperledger/orderer/msp
+        - ../crypto-config/ordererOrganizations/papernet.com/orderers/orderer.papernet.com/tls/:/var/hyperledger/orderer/tls
+        - orderer.papernet.com:/var/hyperledger/production/orderer
+    ports:
+      - 7050:7050
+
+  peer0.orgGw1.papernet.com:
+    container_name: peer0.orgGw1.papernet.com
+    extends:
+      file: peer-base.yaml
+      service: peer-base
+    environment:
+      - CORE_PEER_ID=peer0.orgGw1.papernet.com
+      - CORE_PEER_ADDRESS=peer0.orgGw1.papernet.com:7051
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:7051
+      - CORE_PEER_CHAINCODEADDRESS=peer0.orgGw1.papernet.com:7052
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7052
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.orgGw1.papernet.com:7051
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.orgGw1.papernet.com:7051
+      - CORE_PEER_LOCALMSPID=OrgGw1MSP
+    volumes:
+        - /var/run/:/host/var/run/
+        - ../crypto-config/peerOrganizations/orgGw1.papernet.com/peers/peer0.orgGw1.papernet.com/msp:/etc/hyperledger/fabric/msp
+        - ../crypto-config/peerOrganizations/orgGw1.papernet.com/peers/peer0.orgGw1.papernet.com/tls:/etc/hyperledger/fabric/tls
+        - peer0.orgGw1.papernet.com:/var/hyperledger/production
+    ports:
+      - 7051:7051
+
+  peer0.orgGw2.papernet.com:
+    container_name: peer0.orgGw2.papernet.com
+    extends:
+      file: peer-base.yaml
+      service: peer-base
+    environment:
+      - CORE_PEER_ID=peer0.orgGw2.papernet.com
+      - CORE_PEER_ADDRESS=peer0.orgGw2.papernet.com:8051
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:8051
+      - CORE_PEER_CHAINCODEADDRESS=peer0.orgGw2.papernet.com:8052
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:8052
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.orgGw2.papernet.com:8051
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.orgGw2.papernet.com:8051
+      - CORE_PEER_LOCALMSPID=OrgGw2MSP
+    volumes:
+        - /var/run/:/host/var/run/
+        - ../crypto-config/peerOrganizations/orgGw2.papernet.com/peers/peer0.orgGw2.papernet.com/msp:/etc/hyperledger/fabric/msp
+        - ../crypto-config/peerOrganizations/orgGw2.papernet.com/peers/peer0.orgGw2.papernet.com/tls:/etc/hyperledger/fabric/tls
+        - peer0.orgGw2.papernet.com:/var/hyperledger/production
+    ports:
+      - 8051:8051
+
+  peer0.orgGw3.papernet.com:
+    container_name: peer0.orgGw3.papernet.com
+    extends:
+      file: peer-base.yaml
+      service: peer-base
+    environment:
+      - CORE_PEER_ID=peer0.orgGw3.papernet.com
+      - CORE_PEER_ADDRESS=peer0.orgGw3.papernet.com:9051
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:9051
+      - CORE_PEER_CHAINCODEADDRESS=peer0.orgGw3.papernet.com:9052
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:9052
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.orgGw3.papernet.com:9051
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.orgGw3.papernet.com:9051
+      - CORE_PEER_LOCALMSPID=OrgGw3MSP
+    volumes:
+        - /var/run/:/host/var/run/
+        - ../crypto-config/peerOrganizations/orgGw3.papernet.com/peers/peer0.orgGw3.papernet.com/msp:/etc/hyperledger/fabric/msp
+        - ../crypto-config/peerOrganizations/orgGw3.papernet.com/peers/peer0.orgGw3.papernet.com/tls:/etc/hyperledger/fabric/tls
+        - peer0.orgGw3.papernet.com:/var/hyperledger/production
+    ports:
+      - 9051:9051
+
+
+
+
+
+
+  peer0.orgGw4.papernet.com:
+    container_name: peer0.orgGw4.papernet.com
+    extends:
+      file: peer-base.yaml
+      service: peer-base
+    environment:
+      - CORE_PEER_ID=peer0.orgGw4.papernet.com
+      - CORE_PEER_ADDRESS=peer0.orgGw4.papernet.com:16051
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:16051
+      - CORE_PEER_CHAINCODEADDRESS=peer0.orgGw4.papernet.com:16052
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:16052
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.orgGw4.papernet.com:16051
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.orgGw4.papernet.com:16051
+      - CORE_PEER_LOCALMSPID=OrgGw4MSP
+    volumes:
+        - /var/run/:/host/var/run/
+        - ../crypto-config/peerOrganizations/orgGw4.papernet.com/peers/peer0.orgGw4.papernet.com/msp:/etc/hyperledger/fabric/msp
+        - ../crypto-config/peerOrganizations/orgGw4.papernet.com/peers/peer0.orgGw4.papernet.com/tls:/etc/hyperledger/fabric/tls
+        - peer0.orgGw4.papernet.com:/var/hyperledger/production
+    ports:
+      - 16051:16051
+
+
+  peer0.orgGw5.papernet.com:
+    container_name: peer0.orgGw5.papernet.com
+    extends:
+      file: peer-base.yaml
+      service: peer-base
+    environment:
+      - CORE_PEER_ID=peer0.orgGw5.papernet.com
+      - CORE_PEER_ADDRESS=peer0.orgGw5.papernet.com:17051
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:17051
+      - CORE_PEER_CHAINCODEADDRESS=peer0.orgGw5.papernet.com:17052
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:17052
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.orgGw5.papernet.com:17051
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.orgGw5.papernet.com:17051
+      - CORE_PEER_LOCALMSPID=OrgGw5MSP
+    volumes:
+        - /var/run/:/host/var/run/
+        - ../crypto-config/peerOrganizations/orgGw5.papernet.com/peers/peer0.orgGw5.papernet.com/msp:/etc/hyperledger/fabric/msp
+        - ../crypto-config/peerOrganizations/orgGw5.papernet.com/peers/peer0.orgGw5.papernet.com/tls:/etc/hyperledger/fabric/tls
+        - peer0.orgGw5.papernet.com:/var/hyperledger/production
+    ports:
+      - 17051:17051
+
+
+  peer0.orgGw6.papernet.com:
+    container_name: peer0.orgGw6.papernet.com
+    extends:
+      file: peer-base.yaml
+      service: peer-base
+    environment:
+      - CORE_PEER_ID=peer0.orgGw6.papernet.com
+      - CORE_PEER_ADDRESS=peer0.orgGw6.papernet.com:18051
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:18051
+      - CORE_PEER_CHAINCODEADDRESS=peer0.orgGw6.papernet.com:18052
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:18052
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.orgGw6.papernet.com:18051
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.orgGw6.papernet.com:18051
+      - CORE_PEER_LOCALMSPID=OrgGw6MSP
+    volumes:
+        - /var/run/:/host/var/run/
+        - ../crypto-config/peerOrganizations/orgGw6.papernet.com/peers/peer0.orgGw6.papernet.com/msp:/etc/hyperledger/fabric/msp
+        - ../crypto-config/peerOrganizations/orgGw6.papernet.com/peers/peer0.orgGw6.papernet.com/tls:/etc/hyperledger/fabric/tls
+        - peer0.orgGw6.papernet.com:/var/hyperledger/production
+    ports:
+      - 18051:18051
+
+
+  peer0.orgGw7.papernet.com:
+    container_name: peer0.orgGw7.papernet.com
+    extends:
+      file: peer-base.yaml
+      service: peer-base
+    environment:
+      - CORE_PEER_ID=peer0.orgGw7.papernet.com
+      - CORE_PEER_ADDRESS=peer0.orgGw7.papernet.com:19051
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:19051
+      - CORE_PEER_CHAINCODEADDRESS=peer0.orgGw7.papernet.com:19052
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:19052
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.orgGw7.papernet.com:19051
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.orgGw7.papernet.com:19051
+      - CORE_PEER_LOCALMSPID=OrgGw7MSP
+    volumes:
+        - /var/run/:/host/var/run/
+        - ../crypto-config/peerOrganizations/orgGw7.papernet.com/peers/peer0.orgGw7.papernet.com/msp:/etc/hyperledger/fabric/msp
+        - ../crypto-config/peerOrganizations/orgGw7.papernet.com/peers/peer0.orgGw7.papernet.com/tls:/etc/hyperledger/fabric/tls
+        - peer0.orgGw7.papernet.com:/var/hyperledger/production
+    ports:
+      - 19051:19051
+
+
+  peer0.orgGw8.papernet.com:
+    container_name: peer0.orgGw8.papernet.com
+    extends:
+      file: peer-base.yaml
+      service: peer-base
+    environment:
+      - CORE_PEER_ID=peer0.orgGw8.papernet.com
+      - CORE_PEER_ADDRESS=peer0.orgGw8.papernet.com:20051
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:20051
+      - CORE_PEER_CHAINCODEADDRESS=peer0.orgGw8.papernet.com:20052
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:20052
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.orgGw8.papernet.com:20051
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.orgGw8.papernet.com:20051
+      - CORE_PEER_LOCALMSPID=OrgGw8MSP
+    volumes:
+        - /var/run/:/host/var/run/
+        - ../crypto-config/peerOrganizations/orgGw8.papernet.com/peers/peer0.orgGw8.papernet.com/msp:/etc/hyperledger/fabric/msp
+        - ../crypto-config/peerOrganizations/orgGw8.papernet.com/peers/peer0.orgGw8.papernet.com/tls:/etc/hyperledger/fabric/tls
+        - peer0.orgGw8.papernet.com:/var/hyperledger/production
+    ports:
+      - 20051:20051
+
+
+  peer0.orgGw9.papernet.com:
+    container_name: peer0.orgGw9.papernet.com
+    extends:
+      file: peer-base.yaml
+      service: peer-base
+    environment:
+      - CORE_PEER_ID=peer0.orgGw9.papernet.com
+      - CORE_PEER_ADDRESS=peer0.orgGw9.papernet.com:21051
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:21051
+      - CORE_PEER_CHAINCODEADDRESS=peer0.orgGw9.papernet.com:21052
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:21052
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.orgGw9.papernet.com:21051
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.orgGw9.papernet.com:21051
+      - CORE_PEER_LOCALMSPID=OrgGw9MSP
+    volumes:
+        - /var/run/:/host/var/run/
+        - ../crypto-config/peerOrganizations/orgGw9.papernet.com/peers/peer0.orgGw9.papernet.com/msp:/etc/hyperledger/fabric/msp
+        - ../crypto-config/peerOrganizations/orgGw9.papernet.com/peers/peer0.orgGw9.papernet.com/tls:/etc/hyperledger/fabric/tls
+        - peer0.orgGw9.papernet.com:/var/hyperledger/production
+    ports:
+      - 21051:21051
+
+
+  peer0.orgGw10.papernet.com:
+    container_name: peer0.orgGw10.papernet.com
+    extends:
+      file: peer-base.yaml
+      service: peer-base
+    environment:
+      - CORE_PEER_ID=peer0.orgGw10.papernet.com
+      - CORE_PEER_ADDRESS=peer0.orgGw10.papernet.com:22051
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:22051
+      - CORE_PEER_CHAINCODEADDRESS=peer0.orgGw10.papernet.com:22052
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:22052
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.orgGw10.papernet.com:22051
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.orgGw10.papernet.com:22051
+      - CORE_PEER_LOCALMSPID=OrgGw10MSP
+    volumes:
+        - /var/run/:/host/var/run/
+        - ../crypto-config/peerOrganizations/orgGw10.papernet.com/peers/peer0.orgGw10.papernet.com/msp:/etc/hyperledger/fabric/msp
+        - ../crypto-config/peerOrganizations/orgGw10.papernet.com/peers/peer0.orgGw10.papernet.com/tls:/etc/hyperledger/fabric/tls
+        - peer0.orgGw10.papernet.com:/var/hyperledger/production
+    ports:
+      - 22051:22051
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  peer0.orgCtrl.papernet.com:
+    container_name: peer0.orgCtrl.papernet.com
+    extends:
+      file: peer-base.yaml
+      service: peer-base
+    environment:
+      - CORE_PEER_ID=peer0.orgCtrl.papernet.com
+      - CORE_PEER_ADDRESS=peer0.orgCtrl.papernet.com:10051
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:10051
+      - CORE_PEER_CHAINCODEADDRESS=peer0.orgCtrl.papernet.com:10052
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:10052
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.orgCtrl.papernet.com:10051
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.orgCtrl.papernet.com:10051
+      - CORE_PEER_LOCALMSPID=OrgCtrlMSP
+    volumes:
+        - /var/run/:/host/var/run/
+        - ../crypto-config/peerOrganizations/orgCtrl.papernet.com/peers/peer0.orgCtrl.papernet.com/msp:/etc/hyperledger/fabric/msp
+        - ../crypto-config/peerOrganizations/orgCtrl.papernet.com/peers/peer0.orgCtrl.papernet.com/tls:/etc/hyperledger/fabric/tls
+        - peer0.orgCtrl.papernet.com:/var/hyperledger/production
+    ports:
+      - 10051:10051
+
+
+
+  peer0.orgAgent.papernet.com:
+    container_name: peer0.orgAgent.papernet.com
+    extends:
+      file: peer-base.yaml
+      service: peer-base
+    environment:
+      - CORE_PEER_ID=peer0.orgAgent.papernet.com
+      - CORE_PEER_ADDRESS=peer0.orgAgent.papernet.com:11051
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:11051
+      - CORE_PEER_CHAINCODEADDRESS=peer0.orgAgent.papernet.com:11052
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:11052
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.orgAgent.papernet.com:11051
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.orgAgent.papernet.com:11051
+      - CORE_PEER_LOCALMSPID=OrgAgentMSP
+    volumes:
+        - /var/run/:/host/var/run/
+        - ../crypto-config/peerOrganizations/orgAgent.papernet.com/peers/peer0.orgAgent.papernet.com/msp:/etc/hyperledger/fabric/msp
+        - ../crypto-config/peerOrganizations/orgAgent.papernet.com/peers/peer0.orgAgent.papernet.com/tls:/etc/hyperledger/fabric/tls
+        - peer0.orgAgent.papernet.com:/var/hyperledger/production
+    ports:
+      - 11051:11051
+
+
+
+  peer1.orgAgent.papernet.com:
+    container_name: peer1.orgAgent.papernet.com
+    extends:
+      file: peer-base.yaml
+      service: peer-base
+    environment:
+      - CORE_PEER_ID=peer1.orgAgent.papernet.com
+      - CORE_PEER_ADDRESS=peer1.orgAgent.papernet.com:12051
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:12051
+      - CORE_PEER_CHAINCODEADDRESS=peer1.orgAgent.papernet.com:12052
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:12052
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer1.orgAgent.papernet.com:12051
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer1.orgAgent.papernet.com:12051
+      - CORE_PEER_LOCALMSPID=OrgAgentMSP
+    volumes:
+        - /var/run/:/host/var/run/
+        - ../crypto-config/peerOrganizations/orgAgent.papernet.com/peers/peer1.orgAgent.papernet.com/msp:/etc/hyperledger/fabric/msp
+        - ../crypto-config/peerOrganizations/orgAgent.papernet.com/peers/peer1.orgAgent.papernet.com/tls:/etc/hyperledger/fabric/tls
+        - peer1.orgAgent.papernet.com:/var/hyperledger/production
+    ports:
+      - 12051:12051
+
+
+
+  peer2.orgAgent.papernet.com:
+    container_name: peer2.orgAgent.papernet.com
+    extends:
+      file: peer-base.yaml
+      service: peer-base
+    environment:
+      - CORE_PEER_ID=peer2.orgAgent.papernet.com
+      - CORE_PEER_ADDRESS=peer2.orgAgent.papernet.com:13051
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:13051
+      - CORE_PEER_CHAINCODEADDRESS=peer2.orgAgent.papernet.com:13051
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:13052
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer2.orgAgent.papernet.com:13051
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer2.orgAgent.papernet.com:13051
+      - CORE_PEER_LOCALMSPID=OrgAgentMSP
+    volumes:
+        - /var/run/:/host/var/run/
+        - ../crypto-config/peerOrganizations/orgAgent.papernet.com/peers/peer2.orgAgent.papernet.com/msp:/etc/hyperledger/fabric/msp
+        - ../crypto-config/peerOrganizations/orgAgent.papernet.com/peers/peer2.orgAgent.papernet.com/tls:/etc/hyperledger/fabric/tls
+        - peer2.orgAgent.papernet.com:/var/hyperledger/production
+    ports:
+      - 13051:13051
+
+
+
+
