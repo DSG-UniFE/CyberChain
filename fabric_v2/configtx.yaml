@@ -396,14 +396,6 @@ Organizations:
         AnchorPeers:
             - Host: peer0.orgAgent.papernet.com
               Port: 11051
-#            - Host: peer1.orgAgent.papernet.com
-#              Port: 12051
-#            - Host: peer2.orgAgent.papernet.com
-#              Port: 13051
-#            - Host: peer3.orgAgent.papernet.com
-#              Port: 14051
-#            - Host: peer4.orgAgent.papernet.com
-#              Port: 15051
 
 
 
@@ -667,13 +659,6 @@ Profiles:
                 - *OrgGw1
                 - *OrgGw2
                 - *OrgGw3
-                - *OrgGw4
-                - *OrgGw5
-                - *OrgGw6
-                - *OrgGw7
-                - *OrgGw8
-                - *OrgGw9
-                - *OrgGw10
                 - *OrgCtrl
             Capabilities:
                 <<: *ApplicationCapabilities
@@ -715,12 +700,5 @@ Profiles:
                 - *OrgGw1
                 - *OrgGw2
                 - *OrgGw3
-                - *OrgGw4
-                - *OrgGw5
-                - *OrgGw6
-                - *OrgGw7
-                - *OrgGw8
-                - *OrgGw9
-                - *OrgGw10
 
 
