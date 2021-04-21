@@ -1,11 +1,12 @@
-import json
 import os
-import threading
+import json
 import time
-from datetime import datetime
 import utils
+import threading
+
 import pandas as pd
-import telnetlib
+from configparser import ConfigParser
+
 from opnsenseapi import OPNsenseGW
 
 start_global = 0.0
@@ -20,13 +21,13 @@ type_test = []
 uri_rule_added = []
 
 
-def take_time_telnet(type, destination_net):
+def take_time_telnet(kind, destination_net):
     global start_global
     global rule_apply
     global global_time
     start_apply = time.monotonic()
 
-    if type == "BL":
+    if kind == "BL":
         response = True
         escape = False
     else:
@@ -43,13 +44,13 @@ def take_time_telnet(type, destination_net):
     global_time.append(end_apply - start_global)
 
 
-def take_time(type, destination_net):
+def take_time(kind, destination_net):
     global start_global
     global rule_apply
     global global_time
     start_apply = time.monotonic()
 
-    if type == "BL":
+    if kind == "BL":
         response = 0
         escape = 31744
     else:
@@ -247,7 +248,7 @@ def wl_bl_add_alternate(ops, source_net, destination_net, n_loop, type_protocol,
             threading.Thread(
                 target=add_rule_any(ops, action=action, source_net=source_net, destination_net=destination_net,
                                     count=count)).start()
-            threading.Thread(target=take_time(type=next_type_ping_test, destination_net=destination_net)).start()
+            threading.Thread(target=take_time(kind=next_type_ping_test, destination_net=destination_net)).start()
             time.sleep(4)
             current_type_ping_test = next_type_ping_test
             count = count - 1
@@ -255,7 +256,7 @@ def wl_bl_add_alternate(ops, source_net, destination_net, n_loop, type_protocol,
             threading.Thread(
                 target=add_rule_telnet(ops, action=action, source_net=source_net, destination_net=destination_net,
                                        count=count, test_port_80=test_port_80)).start()
-            threading.Thread(target=take_time_telnet(type=next_type_ping_test, destination_net=destination_net)).start()
+            threading.Thread(target=take_time_telnet(kind=next_type_ping_test, destination_net=destination_net)).start()
             # time.sleep(4)
             current_type_ping_test = next_type_ping_test
             count = count - 1
@@ -364,17 +365,16 @@ def calculate_total_time(i):
 
 
 if __name__ == '__main__':
-    # key + secret from downloaded apikey.txt
-    auth = dict()
-    auth['api_key'] = "<api key>"
-    auth['api_secret'] = "<api secret>"
+    # Read configuration file
+    configuration = ConfigParser()
+    configuration.read(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'configuration.ini'))
 
-    #### Parameters ####
-    firewall_IP = "<gateway address>"
-    ops = OPNsenseGW(firewall_IP, auth.get("api_key"), auth.get("api_secret"))
-    source_net = "<source address>/24"
-    destination_net = "<destination address>/24"
-    n_rules = 10
+    # Parameters
+    firewall_IP = configuration['OPNSENSE']['firewall_IP']
+    ops = OPNsenseGW(firewall_IP, configuration['OPNSENSE']['api_key'], configuration['OPNSENSE']['api_secret'])
+    source_net = configuration['OPNSENSE']['source_net']
+    destination_net = configuration['OPNSENSE']['destination_net']
+    n_rules = configuration['OPNSENSE']['n_rules']
     ###################
     # suppl_delete_all_rules(ops)
 

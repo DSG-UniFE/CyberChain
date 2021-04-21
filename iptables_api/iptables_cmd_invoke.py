@@ -1,11 +1,13 @@
-import json
 import os
-import threading
 import time
-from datetime import datetime
-import requests
-import pandas as pd
+import json
 import socket
+import requests
+import threading
+
+import pandas as pd
+from configparser import ConfigParser
+
 
 start_global = 0.0
 api_invoke_add = []
@@ -23,18 +25,19 @@ def check_port_connection(host, port):
         s.connect((host, int(port)))
         s.shutdown(socket.SHUT_RDWR)
         return True
+
     except:
         return False
 
 
-def take_time(type, destination):
+def take_time(kind, destination):
     global start_global
     global rule_apply
     global global_time
     start_apply = time.monotonic()
 
-    print(type)
-    if type == "BL":
+    print(kind)
+    if kind == "BL":
         response = 0
         escape = 31744
     else:
@@ -53,13 +56,13 @@ def take_time(type, destination):
     global_time.append(end_apply - start_global)
 
 
-def take_time_telnet(type, destination):
+def take_time_telnet(kind, destination):
     global start_global
     global rule_apply
     global global_time
     start_apply = time.monotonic()
 
-    if type == "BL":
+    if kind == "BL":
         response = True
         escape = False
     else:
@@ -91,7 +94,6 @@ def add_rule(uri_path, action, source_net, destination_net, protocol, test_port_
         data = dict(rule=dict(src=source_net, table="FORWARD", protocol="tcp",
                               dst=destination_net, action=action, extra_flag="--destination-port 80"))
 
-
     start_send = time.monotonic()
     if not test_port_80:
         start_global = start_send
@@ -107,14 +109,18 @@ def add_rule(uri_path, action, source_net, destination_net, protocol, test_port_
         else:
             print("Issues with rule entry\n")
             exit(1)
+
     except requests.exceptions.RequestException as err:
         print("Ops: Something Else", err)
         print("Server non attivo")
         exit(3)
+
     except requests.exceptions.HTTPError as errh:
         print("Http Error:", errh)
+
     except requests.exceptions.ConnectionError as errc:
         print("Error Connecting:", errc)
+
     except requests.exceptions.Timeout as errt:
         print("Timeout Error:", errt)
 
@@ -123,7 +129,6 @@ def delete_rule_ping(uri_path, time_calulation=True):
     global start_global
     global api_invoke_add
     global type_test
-
 
     data = dict(delete="delete")
     start_send = time.monotonic()
@@ -140,14 +145,18 @@ def delete_rule_ping(uri_path, time_calulation=True):
         else:
             print("Issues with rule entry\n")
             exit(1)
+
     except requests.exceptions.RequestException as err:
         print("Ops: Something Else", err)
         print("Server non attivo")
         exit(3)
+
     except requests.exceptions.HTTPError as errh:
         print("Http Error:", errh)
+
     except requests.exceptions.ConnectionError as errc:
         print("Error Connecting:", errc)
+
     except requests.exceptions.Timeout as errt:
         print("Timeout Error:", errt)
 
@@ -169,7 +178,6 @@ def wl_bl_add_alternate(uri_path, source_net, destination_net, n_loop, current_t
             print("Indicate test mode")
             exit(30)
 
-
         threading.Thread(target=add_rule(uri_path=uri_path, action=action, source_net=source_net,
                                          destination_net=destination_net, protocol=protocol,
                                          test_port_80=test_port_80)).start()
@@ -184,7 +192,6 @@ def wl_bl_add_alternate(uri_path, source_net, destination_net, n_loop, current_t
 
 
 def print_test_port_80_results():
-
     print(len(api_invoke_delete))
     print(len(api_invoke_add))
     print(len(rule_apply))
@@ -204,10 +211,11 @@ def print_test_port_80_results():
     print(df)
     return df
 
+
 def test_port_80(remote_base_uri, source_net, destination_net):
     global start_global
-    # prepatazione ambiente
 
+    # Preparazione ambiente
     iptables_api_add = "add/rule"
     uri_path_add = os.path.join(remote_base_uri, iptables_api_add)
 
@@ -234,12 +242,18 @@ def calculate_total_time(i):
 
 
 if __name__ == '__main__':
-    protocol = "http"
-    port = "5000"
-    remote_base_uri = f"{protocol}://<gateway address>:{port}"
-    source_net = "<source address>/24"
-    destination_net = "<destination address>/24"
-    n_rules = 6
+    # Read configuration file
+    configuration = ConfigParser()
+    configuration.read(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'configuration.ini'))
+
+    # Parameters
+    protocol = configuration['IPTABLES']['protocol']
+    port = configuration['IPTABLES']['port']
+    gateway_address = configuration['IPTABLES']['gateway_address']
+    remote_base_uri = f"{protocol}://{gateway_address}:{port}"
+    source_net = configuration['IPTABLES']['source_net']
+    destination_net = configuration['IPTABLES']['destination_net']
+    n_rules = configuration['IPTABLES']['n_rules']
 
     iptables_api_add = "add/rule"
     uri_path_add = os.path.join(remote_base_uri, iptables_api_add)

@@ -16,5 +16,6 @@ def check_port_connection(host, port):
         s.connect((host, int(port)))
         s.shutdown(socket.SHUT_RDWR)
         return True
+
     except:
         return False

@@ -1,8 +1,7 @@
 # credit by: https://pyfortiapi.readthedocs.io/en/latest/index.html
 
-import requests
 import logging
-import json
+import requests
 
 # Disable requests' warnings for insecure connections
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
