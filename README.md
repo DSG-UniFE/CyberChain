@@ -2,8 +2,9 @@
 
 ## Installation
 
-Clone the repo
+Work in progress...
 
+You can use [pyenv](https://github.com/pyenv/pyenv) for install a specific version of python.
 
 ## Create Fabric Network
 
