@@ -1,11 +1,5 @@
 # CyberChain
 
-## Installation
-
-Work in progress...
-
-You can use [pyenv](https://github.com/pyenv/pyenv) for install a specific version of python.
-
 ## Create Fabric Network
 
 First of all you need to create cryptographic material (x509 certs and signing keys) for your various network actors modifying the crypto-config.yaml file and using the cryptogen tool to generate them.
