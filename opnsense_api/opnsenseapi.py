@@ -10,6 +10,7 @@ api_rest = {"addRule": "api/firewall/filter/addRule",
             "getRule": "api/firewall/filter/getRule"
             }
 
+
 class OPNsenseGW:
 
     def __init__(self, firewall_ip, api_key, api_secret, timeout=10, port="80", protocol="http"):
@@ -35,7 +36,6 @@ class OPNsenseGW:
             return False
 
     def check_firewall_rule_exist(self, rule_description):
-
         """
         Check if firewall's credentials are set
         :param: rule_description
@@ -56,17 +56,20 @@ class OPNsenseGW:
 
             except requests.exceptions.RequestException as err:
                 print("Ops: Something Else", err)
+
             except requests.exceptions.HTTPError as errh:
                 print("Http Error:", errh)
+
             except requests.exceptions.ConnectionError as errc:
                 print("Error Connecting:", errc)
+
             except requests.exceptions.Timeout as errt:
                 print("Timeout Error:", errt)
+
         else:
             exit(0)
 
     def create_firewall_rule(self, rule_description, data):
-
         """
         Send add rule request to Firewall
         :param: rule_description
@@ -79,19 +82,22 @@ class OPNsenseGW:
             uri_path = os.path.join(self.remote_base_uri, api_rest.get("addRule"))
             r = requests.post(uri_path, auth=(self.api_key, self.api_secret), verify=False, json=data)
             return r
+
         except requests.exceptions.RequestException as err:
             print("OOps: Something Else", err)
+
         except requests.exceptions.HTTPError as errh:
             print("Http Error:", errh)
+
         except requests.exceptions.ConnectionError as errc:
             print("Error Connecting:", errc)
+
         except requests.exceptions.Timeout as errt:
             print("Timeout Error:", errt)
         # else:
         #     print("Rule alredy exist")
 
     def apply_firewall_rule(self):
-
         """
         Apply rule request to Firewall
         :param: None
@@ -114,8 +120,7 @@ class OPNsenseGW:
             finally:
                 return r
 
-    def delete_firewall_rule(self, data, description): # da finire
-
+    def delete_firewall_rule(self, data, description):  # da finire
         """
         Send add rule request to Firewall
         :param: rule_description
@@ -129,12 +134,16 @@ class OPNsenseGW:
             final_url = f"{uri_path}/{data['rule']['uuid']}"
             r = requests.post(final_url, auth=(self.api_key, self.api_secret), verify=False)
             return r
+
         except requests.exceptions.RequestException as err:
             print("OOps: Something Else", err)
+
         except requests.exceptions.HTTPError as errh:
             print("Http Error:", errh)
+
         except requests.exceptions.ConnectionError as errc:
             print("Error Connecting:", errc)
+
         except requests.exceptions.Timeout as errt:
             print("Timeout Error:", errt)
         # else:
@@ -153,17 +162,19 @@ class OPNsenseGW:
 
             except requests.exceptions.RequestException as err:
                 print("Ops: Something Else", err)
+
             except requests.exceptions.HTTPError as errh:
                 print("Http Error:", errh)
+
             except requests.exceptions.ConnectionError as errc:
                 print("Error Connecting:", errc)
+
             except requests.exceptions.Timeout as errt:
                 print("Timeout Error:", errt)
         else:
             exit(0)
 
     def get_all_firewall_rules(self):
-
         """
         Check if firewall's credentials are set
         :param: rule_description
@@ -184,11 +195,15 @@ class OPNsenseGW:
 
             except requests.exceptions.RequestException as err:
                 print("Ops: Something Else", err)
+
             except requests.exceptions.HTTPError as errh:
                 print("Http Error:", errh)
+
             except requests.exceptions.ConnectionError as errc:
                 print("Error Connecting:", errc)
+
             except requests.exceptions.Timeout as errt:
                 print("Timeout Error:", errt)
+
         else:
             exit(0)

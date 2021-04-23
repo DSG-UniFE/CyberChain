@@ -1,11 +1,13 @@
 import os
-import threading
 import time
-from datetime import datetime
 import socket
+import threading
+
 import pandas as pd
+from configparser import ConfigParser
+
 import pyfortiapimod
-import os
+
 
 start_global = 0.0
 api_invoke_add = []
@@ -23,6 +25,7 @@ def check_port_connection(host, port):
         s.connect((host, int(port)))
         s.shutdown(socket.SHUT_RDWR)
         return True
+
     except:
         return False
 
@@ -93,12 +96,15 @@ def add_rule(fgt, data, takeStartTime=True, time_calulation=True):
     start_add = time.monotonic()
     if takeStartTime:
         start_global = start_add
+
     reply = fgt.create_firewall_policy(data['policyid'], data)
     if reply == 200:
         end = time.monotonic()
         if time_calulation:
             api_invoke_add.append(end - start_add)
+
         print(f"The rule with ID {data['policyid']} has been inserted in {end - start_add} seconds")
+
         if data['policyid'] == 1:
             print("First Rule")
         else:
@@ -108,6 +114,7 @@ def add_rule(fgt, data, takeStartTime=True, time_calulation=True):
             if time_calulation:
                 api_invoke_move.append(end_move - start_move)
             print(f"The rule with ID {data['policyid']} has been moved in {end_move - start_move} seconds")
+
     else:
         print("Problems with rule insertion")
         print(reply)
@@ -153,13 +160,11 @@ def add_rule_and_take_application_time(fgt, data, destination_net, takeStartTime
 
 
 def print_test_port_80_results():
-
     print(len(api_invoke_delete))
     print(len(api_invoke_add))
     print(len(rule_apply))
     print(len(total_time))
     print(len(global_time))
-
 
     df = pd.DataFrame(
         {
@@ -185,20 +190,25 @@ def calculate_total_time(i):
 
 
 if __name__ == '__main__':
-    username = '<username>'
-    passwd = '<password>'
-    firewall_IP = "<gateway address>"
-    source_name = "hostb"
-    destination_name = "hosta"
-    destination_net = "<hosta_address/24"
-    n_rules = 5
+    # Read configuration file
+    configuration = ConfigParser()
+    configuration.read(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'configuration.ini'))
 
-    fgt = pyfortiapimod.FortiGate(ipaddr=firewall_IP, username=username, password=passwd, port='80')
+    username = configuration['FORTIGATE']['username']
+    password = configuration['FORTIGATE']['password']
+    firewall_IP = configuration['FORTIGATE']['firewall_IP']
+    source_name = configuration['FORTIGATE']['source_name']
+    destination_name = configuration['FORTIGATE']['destination_name']
+    destination_net = configuration['FORTIGATE']['destination_net']
+    n_rules = configuration['FORTIGATE']['n_rules']
+
+    fgt = pyfortiapimod.FortiGate(ipaddr=firewall_IP, username=username, password=password, port='80')
     fgt.login()
     for i in range(10):
         remove_all_rules(fgt)
         time.sleep(3)
-        # prepatazione ambiente
+
+        # Prepatazione ambiente
         print("Add block rule destination ip on port 80")
         data = get_rule_data(1, "Block hostb -> hosta port 80", source_name, destination_name, 'deny')
         add_rule(fgt, data, takeStartTime=False, time_calulation=False)
@@ -206,6 +216,7 @@ if __name__ == '__main__':
         execute_test(fgt, source_name, destination_name, destination_net)
         calculate_total_time(i)
         time.sleep(3)
+
     # data = get_rule_data(1, 'rule_name1', source_name, destination_name, 'accept')
     # add_rule(fgt, data, takeStartTime=False)
     # time.sleep(1)
