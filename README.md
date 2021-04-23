@@ -2,7 +2,7 @@
 
 # Create Fabric Network
 First of all you need to create cryptographic material (x509 certs and signing keys) for your various network actors modifying the crypto-config.yaml file and using the cryptogen tool to generate them.
-Now you need create the configuration artifacts modifying configtx.yaml file which contains the definitions for the sample network and using the configtxgen tool. In this case, the files that you'll create are: 
+Now you need to create the configuration artifacts modifying configtx.yaml file which contains the definitions for the sample network and using the configtxgen tool. In this case, the files that you'll create are: 
 * orderer genesis block,
 * channel configuration transaction,
 * five anchor peer transactions (one for each Peer Organization: orgAgent, orgCtrl, orgGw1, orgGw2, orgGw3).
@@ -10,7 +10,7 @@ Now you need create the configuration artifacts modifying configtx.yaml file whi
 The profiles used are:
 * "**OrgsSubChannel1**" to create channel configuration with three organizations (Agent, Controller and Gateway);
 * "**OrgsChannelGw**" to create channel configuration with four organizations (Controller and three Gateway);
-* "**MultiNodeEtcdRaft**" to create genesis block of network configuration. 
+* "**MultiNodeEtcdRaft**" to create the genesis block of network configuration. 
 
 *Remember: Pay attention to the “Profiles” section at the bottom of configtx.yaml file.*
 
@@ -19,7 +19,7 @@ After that, you can run the network. You will notice that will be started one pe
 *WARNING: We deployed the peers to three different servers with an orderer on each.*
 
 
-# Crate channel
+# Create channel
 To create the channel, we used the CLI fabric-tool (latest version).
 
 For the following CLI commands against peer0.orgGw1.$NETWORK_NAME.com CLI to work, you need to preface four environment variables given below. These informations are essential to indicate to the cli which peer it must connect.
@@ -66,7 +66,7 @@ After that, you need to provide a chaincode package label as a description of th
 $peer lifecycle chaincode approveformyorg --channelID $CHANNEL_NAME --name $CHAINCODE --version 1.0 --package-id $CC_PACKAGE_ID --sequence 1 --tls --cafile $PATH/tlsca.$NETWORK_NAME.com-cert.pem
 ```
 
-Now we provided a **--signature-policy** argument to the command above to set the chaincode endorsement policy. In sub-channel case, the policy will require an endorsement from a peer belonging to 2 out of **OrgGw1, OrgCtrl AND OrgAgent** (i.e. three endorsements).
+Now we provided a **--signature-policy** argument to the command above to set the chaincode endorsement policy. In the sub-channel case, the policy will require an endorsement from a peer belonging to 2 out of **OrgGw1, OrgCtrl AND OrgAgent** (i.e. three endorsements).
 
 Since all channel members have approved the definition, you can now commit it to the channel as follows:
 ```
