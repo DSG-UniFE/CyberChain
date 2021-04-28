@@ -139,7 +139,7 @@ Now you can invoke the chaincode.
 
 As previously mentioned, we realize a basic wrapper for:
 
-* Fortigate, '[fortinet_api](fortinet_api)' directory;
+* Fortigate, '[fortigat_api](fortigat_api)' directory;
 * iptables, '[iptables_api](iptables_api)' directory;
 * OPNsense, '[opnsense_api](opnsense_api)' directory.
 
