@@ -37,9 +37,9 @@ pip install -r requirements.txt  # install all Python libraries
 ### Create Fabric Network
 
 First of all you need to create cryptographic material (x509 certs and signing keys)
-for your various network actors modifying the `[crypto-config.yaml](fabric_v2/crypto-config.yaml)`
+for your various network actors modifying the [crypto-config.yaml](fabric_v2/crypto-config.yaml)
 file and using the cryptogen tool to generate them.
-Now you need to create the configuration artifacts modifying `[configtx.yaml](fabric_v2/configtx.yaml)`
+Now you need to create the configuration artifacts modifying [configtx.yaml](fabric_v2/configtx.yaml)
 file which contains the definitions for the sample network and using the configtxgen tool.
 In this case, the files that you'll create are:
 
@@ -158,7 +158,7 @@ to remove the previous rule and then to add the new one.
 ### How it works
 
 For reaching the goal to quantitatively verify the latency to apply a new access rule,
-first of all you need to modify the `[configuration.ini](configuration.ini)` with
+first of all you need to modify the [configuration.ini](configuration.ini) with
 the settings of each gateway.
 
 Later you can test the execution with the following commands:
