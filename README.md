@@ -70,7 +70,7 @@ For the following CLI commands against peer0.orgGw1.$NETWORK_NAME.com CLI to wor
 you need to preface four environment variables given below. These informations are
 essential to indicate to the cli which peer it must connect. In this case:
 
-```
+```bash
 OrgGw1
 - CORE_PEER_MSPCONFIGPATH=$PATH/msp
 - CORE_PEER_ADDRESS=peer0.orgGw1.$NETWORK_NAME.com:7051
@@ -80,13 +80,13 @@ OrgGw1
 
 Now you can execute the command below to create a channel:
 
-```
+```bash
 peer channel create -o orderer.$NETWORK_NAME.com:7050 -c $CHANNEL_NAME -f $PATH/$CHANNEL.tx --tls --cafile $PATH/tlsca.$NETWORK_NAME.com-cert.pem
 ```
 
 After that you can join OrgGw1 peer to the channel:
 
-```
+```bash
 peer channel join -b $CHANNEL_NAME.block
 ```
 
@@ -96,7 +96,7 @@ These operations must be performed for all organizations.
 
 At this point you need to update the anchor peers as follows:
 
-```
+```bash
 peer channel update -o orderer.$NETWORK_NAME.com:7050 -c $CHANNEL_NAME -f $PATH/OrgGw1MSPanchors.tx --tls --cafile $PATH/tlsca.$NETWORK_NAME.com-cert.pem
 ```
 
@@ -109,14 +109,14 @@ chaincode governance.
 
 You need to package the chaincode before it can be installed on peers.
 
-```
+```bash
 peer lifecycle chaincode package $CHAINCODE.tar.gz --path $PATH/chaincode/$CHAINCODE --lang golang --label $CHAINCODE_1.0
 ```
 
 After that, you need to provide a chaincode package label as a description of the
 chaincode. Then you can approve the chaincode definition:
 
-```
+```bash
 peer lifecycle chaincode approveformyorg --channelID $CHANNEL_NAME --name $CHAINCODE --version 1.0 --package-id $CC_PACKAGE_ID --sequence 1 --tls --cafile $PATH/tlsca.$NETWORK_NAME.com-cert.pem
 ```
 
@@ -127,7 +127,7 @@ endorsement from a peer belonging to 2 out of **OrgGw1, OrgCtrl AND OrgAgent**
 
 Since all channel members have approved the definition, you can now commit it to the channel as follows:
 
-```
+```bash
 peer lifecycle chaincode commit -o orderer.$NETWORK_NAME.com:7050 --channelID $CHANNEL_NAME --name $CHAINCODE --version 1.0 --sequence 1 --tls --cafile "$PATH/tlsca.$NETWORK_NAME.com-cert.pem" --peerAddresses peer0.orgGw1.$NETWORK_NAME.com:7051 --tlsRootCertFiles "$PATH/ca.crt" --peerAddresses peer0.orgCtrl.$NETWORK_NAME.com:10051 --tlsRootCertFiles "$PATH/ca.crt"      --peerAddresses peer0.orgAgent.$NETWORK_NAME.com:11051 --tlsRootCertFiles "$PATH/ca.crt"
 ```
 
