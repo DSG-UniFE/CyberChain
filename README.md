@@ -150,7 +150,7 @@ one gateways), how you can see in the above image. All instances have 1 vCPU and
 
 ![gateway_topology](images/gateway_topology.jpg)
 
-The dynamic on which the test is focused is to have a starting situation where a node has TCP traffic allowed only on port 80. 
+The dynamic the test is focused on involves a starting situation where a node has TCP traffic allowed only on port 80. 
 A new access rule imposes that only TCP traffic on port 443 is allowed, therefore it is required to remove the previous rule and then add the new one. 
 The entire time is given by the time for removing the first rule, and the time required to insert and apply a new access rule.
 
