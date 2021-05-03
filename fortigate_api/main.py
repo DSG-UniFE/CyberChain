@@ -209,7 +209,7 @@ if __name__ == '__main__':
         remove_all_rules(fgt)
         time.sleep(4)
 
-        # Prepatazione ambiente
+        # Preparazione ambiente
         print("Add block rule destination ip on port 80")
         data = get_rule_data(1, "Block hostb -> hosta port 80", source_name, destination_name, 'deny')
         add_rule(fgt, data, takeStartTime=False, time_calulation=False)
@@ -217,7 +217,6 @@ if __name__ == '__main__':
         execute_test(fgt, source_name, destination_name, destination_net)
         calculate_total_time(i)
         time.sleep(4)
-
 
     df = print_test_port_80_results()
     df.to_csv(os.path.join(os.path.dirname(abs_folder_path), 'fortigate.csv'), index=False)
