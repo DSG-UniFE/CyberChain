@@ -48,7 +48,6 @@ In this case, the files that you'll create are:
 * five anchor peer transactions (one for each Peer Organization: orgAgent, orgCtrl, orgGw1, orgGw2, orgGw3).
 
 The profiles used are:
-
 * "**OrgsSubChannel1**" to create channel configuration with three organizations (Agent, Controller and Gateway);
 * "**OrgsChannelGw**" to create channel configuration with four organizations (Controller and three Gateway);
 * "**MultiNodeEtcdRaft**" to create the genesis block of network configuration.
