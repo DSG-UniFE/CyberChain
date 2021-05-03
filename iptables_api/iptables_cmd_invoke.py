@@ -244,7 +244,8 @@ def calculate_total_time(i):
 if __name__ == '__main__':
     # Read configuration file
     configuration = ConfigParser()
-    configuration.read(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'configuration.ini'))
+    abs_folder_path = os.path.dirname(os.path.abspath(__file__))
+    configuration.read(os.path.join(abs_folder_path, 'configuration.ini'))
 
     # Parameters
     protocol = configuration['IPTABLES']['protocol']
@@ -284,4 +285,4 @@ if __name__ == '__main__':
         time.sleep(4)
 
     df = print_test_port_80_results()
-    df.to_csv('./iptables.csv', index=False)
+    df.to_csv(os.path.join(os.path.dirname(abs_folder_path), 'iptables.csv'), index=False)

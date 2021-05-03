@@ -192,7 +192,8 @@ def calculate_total_time(i):
 if __name__ == '__main__':
     # Read configuration file
     configuration = ConfigParser()
-    configuration.read(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'configuration.ini'))
+    abs_folder_path = os.path.dirname(os.path.abspath(__file__))
+    configuration.read(os.path.join(abs_folder_path, 'configuration.ini'))
 
     username = configuration['FORTIGATE']['username']
     password = configuration['FORTIGATE']['password']
@@ -224,5 +225,5 @@ if __name__ == '__main__':
     # add_rule_and_take_application_time(fgt, data, destination_net)
     # # remove_rule(fgt, 1)
     df = print_test_port_80_results()
-    df.to_csv('./fortigate.csv', index=False)
+    df.to_csv(os.path.join(os.path.dirname(abs_folder_path), 'fortigate.csv'), index=False)
     fgt.logout()

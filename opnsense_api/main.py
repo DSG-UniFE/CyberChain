@@ -367,7 +367,8 @@ def calculate_total_time(i):
 if __name__ == '__main__':
     # Read configuration file
     configuration = ConfigParser()
-    configuration.read(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'configuration.ini'))
+    abs_folder_path = os.path.dirname(os.path.abspath(__file__))
+    configuration.read(os.path.join(abs_folder_path, 'configuration.ini'))
 
     # Parameters
     firewall_IP = configuration['OPNSENSE']['firewall_IP']
@@ -396,4 +397,4 @@ if __name__ == '__main__':
         print_test_port_80_results()
 
     df = print_test_port_80_results()
-    df.to_csv('./opnsense.csv', index=False)
+    df.to_csv(os.path.join(os.path.dirname(abs_folder_path), 'opnsense.csv'), index=False)
