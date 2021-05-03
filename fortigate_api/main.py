@@ -47,7 +47,7 @@ def take_time(destination_net, action):
     start_apply = time.monotonic()
 
     while response != escape:
-        response = check_port_connection(destination_net, 80)
+        response = check_port_connection(destination_net[:-3], 80)
         # print(response)
         # time.sleep(0.25)
 
@@ -192,7 +192,7 @@ def calculate_total_time(i):
 if __name__ == '__main__':
     # Read configuration file
     configuration = ConfigParser()
-    abs_folder_path = os.path.dirname(os.path.abspath(__file__))
+    abs_folder_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     configuration.read(os.path.join(abs_folder_path, 'configuration.ini'))
 
     username = configuration['FORTIGATE']['username']
@@ -201,29 +201,24 @@ if __name__ == '__main__':
     source_name = configuration['FORTIGATE']['source_name']
     destination_name = configuration['FORTIGATE']['destination_name']
     destination_net = configuration['FORTIGATE']['destination_net']
-    n_rules = configuration['FORTIGATE']['n_rules']
+    n_rules = int(configuration['FORTIGATE']['n_rules'])
 
     fgt = pyfortiapimod.FortiGate(ipaddr=firewall_IP, username=username, password=password, port='80')
     fgt.login()
-    for i in range(10):
+    for i in range(n_rules):
         remove_all_rules(fgt)
-        time.sleep(3)
+        time.sleep(4)
 
         # Prepatazione ambiente
         print("Add block rule destination ip on port 80")
         data = get_rule_data(1, "Block hostb -> hosta port 80", source_name, destination_name, 'deny')
         add_rule(fgt, data, takeStartTime=False, time_calulation=False)
-        time.sleep(3)
+        time.sleep(4)
         execute_test(fgt, source_name, destination_name, destination_net)
         calculate_total_time(i)
-        time.sleep(3)
+        time.sleep(4)
 
-    # data = get_rule_data(1, 'rule_name1', source_name, destination_name, 'accept')
-    # add_rule(fgt, data, takeStartTime=False)
-    # time.sleep(1)
-    # data = get_rule_data(2, 'rule_name2', source_name, destination_name, 'deny')
-    # add_rule_and_take_application_time(fgt, data, destination_net)
-    # # remove_rule(fgt, 1)
+
     df = print_test_port_80_results()
     df.to_csv(os.path.join(os.path.dirname(abs_folder_path), 'fortigate.csv'), index=False)
     fgt.logout()

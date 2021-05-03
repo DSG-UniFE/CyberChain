@@ -9,10 +9,10 @@ app = flask.Flask(__name__)
 
 # Read configuration file
 configuration = ConfigParser()
-configuration.read(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'configuration.ini'))
+configuration.read(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'configuration.ini'))
 
 
-@app.route('/add/rule/icmp', methods=['POST'])
+@app.route('/add/rule', methods=['POST'])
 def add_rule():
     if not request.json or 'action' not in request.json:
         abort(400)
@@ -28,7 +28,8 @@ def add_rule():
                     # 'if_out': request.json.get('if_out')
                     }
 
-        sudo_password = configuration['IPTABLES']['api_key']
+        sudo_password = configuration['IPTABLES']['sudo_password']
+        print(sudo_password)
         command = f"iptables -I {new_rule['table']} -s {new_rule['src']} -d "\
                   f"{new_rule['dst']} -j {new_rule['action']} -p {new_rule['protocol']} {new_rule['extra_flag']}"
         print(command)
@@ -47,7 +48,7 @@ def delete_rule():
     if not request.json or 'delete' not in request.json:
         abort(400)
     else:
-        sudo_password = 'hostgw'
+        sudo_password = configuration['IPTABLES']['sudo_password']
         command = "iptables -D FORWARD 1"
         print(command)
         command = command.split()
