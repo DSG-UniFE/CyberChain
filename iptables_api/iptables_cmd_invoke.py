@@ -244,7 +244,7 @@ def calculate_total_time(i):
 if __name__ == '__main__':
     # Read configuration file
     configuration = ConfigParser()
-    abs_folder_path = os.path.dirname(os.path.abspath(__file__))
+    abs_folder_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     configuration.read(os.path.join(abs_folder_path, 'configuration.ini'))
 
     # Parameters
@@ -254,7 +254,7 @@ if __name__ == '__main__':
     remote_base_uri = f"{protocol}://{gateway_address}:{port}"
     source_net = configuration['IPTABLES']['source_net']
     destination_net = configuration['IPTABLES']['destination_net']
-    n_rules = configuration['IPTABLES']['n_rules']
+    n_rules = int(configuration['IPTABLES']['n_rules'])
 
     iptables_api_add = "add/rule"
     uri_path_add = os.path.join(remote_base_uri, iptables_api_add)
@@ -266,7 +266,7 @@ if __name__ == '__main__':
     # wl_bl_add_alternate(uri_path_add, source_net, destination_net, n_rules, 'WL', test_port_80=False, protocol='telnet')
     iptables_api_add = "add/rule"
     uri_path_add = os.path.join(remote_base_uri, iptables_api_add)
-    for i in range(10):
+    for i in range(n_rules):
         add_rule(uri_path=uri_path_add, action='DROP', source_net=source_net,
                  destination_net=destination_net, protocol=protocol,
                  test_port_80=True, time_calulation=False)

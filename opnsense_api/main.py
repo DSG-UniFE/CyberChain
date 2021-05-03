@@ -367,7 +367,7 @@ def calculate_total_time(i):
 if __name__ == '__main__':
     # Read configuration file
     configuration = ConfigParser()
-    abs_folder_path = os.path.dirname(os.path.abspath(__file__))
+    abs_folder_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     configuration.read(os.path.join(abs_folder_path, 'configuration.ini'))
 
     # Parameters
@@ -375,14 +375,14 @@ if __name__ == '__main__':
     ops = OPNsenseGW(firewall_IP, configuration['OPNSENSE']['api_key'], configuration['OPNSENSE']['api_secret'])
     source_net = configuration['OPNSENSE']['source_net']
     destination_net = configuration['OPNSENSE']['destination_net']
-    n_rules = configuration['OPNSENSE']['n_rules']
+    n_rules = int(configuration['OPNSENSE']['n_rules'])
     ###################
     # suppl_delete_all_rules(ops)
 
     # one shot WL with n_loop == 1
     # one shot BL with n_loop == 2 (WL+BL)
     # wl_bl_add_alternate(ops, source_net, destination_net, n_rules, "telnet", "WL")
-    for i in range(10):
+    for i in range(n_rules):
         add_rule_any(ops, action='block', source_net=source_net, destination_net=destination_net, count=2,
                      test_port_80=True, time_calculation=False)
         print(f"Aggiunta regola tutto negato")
