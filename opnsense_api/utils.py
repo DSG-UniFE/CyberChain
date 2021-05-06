@@ -19,3 +19,11 @@ def check_port_connection(host, port):
 
     except:
         return False
+
+
+def change_format_float_list(old_list):
+    new_list = list()
+    for flt in old_list:
+        new_list.append(str(flt).replace('.', ','))
+
+    return new_list

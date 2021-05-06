@@ -69,7 +69,7 @@ class OPNsenseGW:
         else:
             exit(0)
 
-    def create_firewall_rule(self, rule_description, data):
+    def create_firewall_rule(self, data):
         """
         Send add rule request to Firewall
         :param: rule_description
@@ -94,8 +94,7 @@ class OPNsenseGW:
 
         except requests.exceptions.Timeout as errt:
             print("Timeout Error:", errt)
-        # else:
-        #     print("Rule alredy exist")
+
 
     def apply_firewall_rule(self):
         """
@@ -120,7 +119,7 @@ class OPNsenseGW:
             finally:
                 return r
 
-    def delete_firewall_rule(self, data, description):  # da finire
+    def delete_firewall_rule(self, data):  # da finire
         """
         Send add rule request to Firewall
         :param: rule_description
