@@ -18,6 +18,13 @@ total_time = []
 api_invoke_delete = []
 
 
+def change_format_float_list(old_list):
+    new_list = list()
+    for flt in old_list:
+        new_list.append(str(flt).replace('.', ','))
+
+    return new_list
+
 def check_port_connection(host, port):
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -160,19 +167,14 @@ def add_rule_and_take_application_time(fgt, data, destination_net, takeStartTime
 
 
 def print_test_port_80_results():
-    print(len(api_invoke_delete))
-    print(len(api_invoke_add))
-    print(len(rule_apply))
-    print(len(total_time))
-    print(len(global_time))
 
     df = pd.DataFrame(
         {
-            "API Invoke delete": api_invoke_delete,
-            "API Invoke Add": api_invoke_add,
-            "Rule apply": rule_apply,
-            "Total Time": total_time,
-            "Global Time": global_time
+            "API Invoke delete": change_format_float_list(api_invoke_delete),
+            "API Invoke Add": change_format_float_list(api_invoke_add),
+            "Rule apply": change_format_float_list(rule_apply),
+            "Total Time": change_format_float_list(total_time),
+            "Global Time": change_format_float_list(global_time)
         }
     )
 
@@ -219,5 +221,5 @@ if __name__ == '__main__':
         time.sleep(4)
 
     df = print_test_port_80_results()
-    df.to_csv(os.path.join(os.path.dirname(abs_folder_path), 'fortigate.csv'), index=False)
+    df.to_csv(os.path.join(os.path.dirname(abs_folder_path), 'fortigate.csv'), sep=";", index=False)
     fgt.logout()

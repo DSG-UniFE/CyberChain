@@ -8,7 +8,6 @@ import threading
 import pandas as pd
 from configparser import ConfigParser
 
-
 start_global = 0.0
 api_invoke_add = []
 api_invoke_delete = []
@@ -17,6 +16,13 @@ total_time = []
 global_time = []
 type_test = []
 
+
+def change_format_float_list(old_list):
+    new_list = list()
+    for flt in old_list:
+        new_list.append(str(flt).replace('.', ','))
+
+    return new_list
 
 def check_port_connection(host, port):
     try:
@@ -30,24 +36,24 @@ def check_port_connection(host, port):
         return False
 
 
-def take_time(kind, destination):
+def take_time(destination_net, action):
     global start_global
     global rule_apply
     global global_time
+
+    # accept case
+    response = False
+    escape = True
+
+    if action == 'DROP':
+        print("in DROP")
+        response = not response
+        escape = not escape
+
     start_apply = time.monotonic()
 
-    print(kind)
-    if kind == "BL":
-        response = 0
-        escape = 31744
-    else:
-        response = 1
-        escape = 0
-
     while response != escape:
-        response = os.system(f"timeout 0.05 ping -c 1 {destination[:-3]}  >/dev/null")
-        # print(response)
-        # time.sleep(0.25)
+        response = check_port_connection(destination_net[:-3], 80)
 
     end_apply = time.monotonic()
     print(f"Wait_apply_rule_any: start {start_apply} - end {end_apply} Time: {end_apply - start_apply}")
@@ -56,58 +62,27 @@ def take_time(kind, destination):
     global_time.append(end_apply - start_global)
 
 
-def take_time_telnet(kind, destination):
-    global start_global
-    global rule_apply
-    global global_time
-    start_apply = time.monotonic()
-
-    if kind == "BL":
-        response = True
-        escape = False
-    else:
-        response = False
-        escape = True
-    while response != escape:
-        response = check_port_connection(destination[:-3], 80)
-        # time.sleep(0.25)
-
-    end_apply = time.monotonic()
-    print(f"Wait_apply_rule_any: start {start_apply} - end {end_apply} Time: {end_apply - start_apply}")
-    print(f"Global_time_rule_any: start {start_global} - end {end_apply} Time: {end_apply - start_global}")
-    rule_apply.append(end_apply - start_apply)
-    global_time.append(end_apply - start_global)
-
-
-def add_rule(uri_path, action, source_net, destination_net, protocol, test_port_80=False, time_calulation=True):
+def add_rule(uri_path, action, source_net, destination_net, protocol, saveTime=False):
     global start_global
     global api_invoke_add
     global type_test
 
-    type_test.append(action)
-
-    # sudo iptables -I FORWARD -s 192.168.51.51 -d 192.168.50.50 -p icmp --icmp-type echo-request -j ACCEPT/DROP
-    if protocol == 'icmp':
-        data = dict(rule=dict(src=source_net, table="FORWARD", protocol="icmp",
-                              dst=destination_net, action=action, extra_flag="--icmp-type echo-request"))
-    else:
-        data = dict(rule=dict(src=source_net, table="FORWARD", protocol="tcp",
-                              dst=destination_net, action=action, extra_flag="--destination-port 80"))
+    data = dict(rule=dict(src=source_net, table="FORWARD", protocol=protocol,
+                          dst=destination_net, action=action, extra_flag="--destination-port 80"))
 
     start_send = time.monotonic()
-    if not test_port_80:
-        start_global = start_send
-    r = None
+
     try:
         r = requests.post(uri_path, verify=False, json=data['rule'])
         if r.status_code == 201:
             end_send = time.monotonic()
-            response = json.loads(r.text)
             print(f"Add_rule: start {start_send} - end {end_send} Time: {end_send - start_send}")
-            if time_calulation:
+            if saveTime:
                 api_invoke_add.append(end_send - start_send)
         else:
             print("Issues with rule entry\n")
+            response = json.loads(r.text)
+            print(response)
             exit(1)
 
     except requests.exceptions.RequestException as err:
@@ -125,7 +100,7 @@ def add_rule(uri_path, action, source_net, destination_net, protocol, test_port_
         print("Timeout Error:", errt)
 
 
-def delete_rule_ping(uri_path, time_calulation=True):
+def delete_rule(uri_path, saveTime=False):
     global start_global
     global api_invoke_add
     global type_test
@@ -135,12 +110,11 @@ def delete_rule_ping(uri_path, time_calulation=True):
     r = None
     try:
         r = requests.post(uri_path, verify=False, json=data['delete'])
-        # print(json.loads(r.text))
         if r.status_code == 201:
             end_send = time.monotonic()
             print(f"Delete rule."
                   f"Time: {end_send - start_send}")
-            if time_calulation:
+            if saveTime:
                 api_invoke_delete.append(end_send - start_send)
         else:
             print("Issues with rule entry\n")
@@ -161,50 +135,22 @@ def delete_rule_ping(uri_path, time_calulation=True):
         print("Timeout Error:", errt)
 
 
-def wl_bl_add_alternate(uri_path, source_net, destination_net, n_loop, current_type_ping_test,
-                        test_port_80=False, protocol='icmp'):
-    action = None
-    current_type_ping_test = current_type_ping_test
-    next_type_ping_test = None
+def add_rule_and_take_application_time(uri_path, source_net, destination_net, protocol, action, saveTime=False):
+    threading.Thread(target=add_rule(uri_path=uri_path, action=action, source_net=source_net,
+                                     destination_net=destination_net, protocol=protocol, saveTime=saveTime)).start()
 
-    for _ in range(n_loop):
-        if current_type_ping_test == 'WL':
-            action = "DROP"
-            next_type_ping_test = 'BL'
-        elif current_type_ping_test == 'BL':
-            action = "ACCEPT"
-            next_type_ping_test = 'WL'
-        else:
-            print("Indicate test mode")
-            exit(30)
-
-        threading.Thread(target=add_rule(uri_path=uri_path, action=action, source_net=source_net,
-                                         destination_net=destination_net, protocol=protocol,
-                                         test_port_80=test_port_80)).start()
-
-        if protocol == 'icmp':
-            threading.Thread(target=take_time(next_type_ping_test, destination_net)).start()
-        else:
-            threading.Thread(target=take_time_telnet(next_type_ping_test, destination_net)).start()
-
-        # time.sleep(4)
-        current_type_ping_test = next_type_ping_test
+    threading.Thread(target=take_time(destination_net, action)).start()
 
 
 def print_test_port_80_results():
-    print(len(api_invoke_delete))
-    print(len(api_invoke_add))
-    print(len(rule_apply))
-    print(len(total_time))
-    print(len(global_time))
 
     df = pd.DataFrame(
         {
-            "API Invoke delete": api_invoke_delete,
-            "API Invoke Add": api_invoke_add,
-            "Rule apply": rule_apply,
-            "Total Time": total_time,
-            "Global Time": global_time
+            "API Invoke delete": change_format_float_list(api_invoke_delete),
+            "API Invoke Add": change_format_float_list(api_invoke_add),
+            "Rule apply": change_format_float_list(rule_apply),
+            "Total Time": change_format_float_list(total_time),
+            "Global Time": change_format_float_list(global_time)
         }
     )
 
@@ -212,10 +158,9 @@ def print_test_port_80_results():
     return df
 
 
-def test_port_80(remote_base_uri, source_net, destination_net):
+def execute_test(remote_base_uri, source_net, destination_net, protocol):
     global start_global
 
-    # Preparazione ambiente
     iptables_api_add = "add/rule"
     uri_path_add = os.path.join(remote_base_uri, iptables_api_add)
 
@@ -225,10 +170,10 @@ def test_port_80(remote_base_uri, source_net, destination_net):
     start_send = time.monotonic()
     start_global = start_send
     print(start_global)
-    delete_rule_ping(uri_path_delete)
-    print(f"Eliminata la regola che blocca ip su porta 80")
-    wl_bl_add_alternate(uri_path_add, source_net, destination_net, 1, 'BL', test_port_80=True, protocol='telnet')
-    print(f"Aggiunta regola permetti ip di destinazione su porta 80")
+    delete_rule(uri_path_delete, True)
+    print(f"Eliminated the rule that blocks IP on port 80")
+    add_rule_and_take_application_time(uri_path_add, source_net, destination_net, protocol=protocol, action='ACCEPT', saveTime=True)
+    print("Add accept rule destination IP on port 80")
 
 
 def calculate_total_time(i):
@@ -239,6 +184,13 @@ def calculate_total_time(i):
 
     total_time.append(api_invoke_add[i] + api_invoke_delete[i] + rule_apply[i])
     print(total_time)
+
+
+def remove_all_rules(remote_base_uri):
+    iptables_api_delete = "delete/rule"
+    uri_path_delete = os.path.join(remote_base_uri, iptables_api_delete)
+    for _ in range(2):
+        delete_rule(uri_path_delete)
 
 
 if __name__ == '__main__':
@@ -259,30 +211,22 @@ if __name__ == '__main__':
     iptables_api_add = "add/rule"
     uri_path_add = os.path.join(remote_base_uri, iptables_api_add)
 
-    iptables_api_delete = "delete/rule"
-    uri_path_delete = os.path.join(remote_base_uri, iptables_api_delete)
-
-    # uri_path_add = os.path.join(remote_base_uri, iptables_api_add)
-    # wl_bl_add_alternate(uri_path_add, source_net, destination_net, n_rules, 'WL', test_port_80=False, protocol='telnet')
-    iptables_api_add = "add/rule"
-    uri_path_add = os.path.join(remote_base_uri, iptables_api_add)
     for i in range(n_rules):
-        add_rule(uri_path=uri_path_add, action='DROP', source_net=source_net,
-                 destination_net=destination_net, protocol=protocol,
-                 test_port_80=True, time_calulation=False)
-
-        print(f"Aggiunta regola tutto negato")
+        remove_all_rules(remote_base_uri)
+        time.sleep(4)
 
         add_rule(uri_path=uri_path_add, action='DROP', source_net=source_net,
-                 destination_net=destination_net, protocol=protocol,
-                 test_port_80=True, time_calulation=False)
+                 destination_net=destination_net, protocol='tcp')
         time.sleep(4)
-        test_port_80(remote_base_uri, source_net, destination_net)
+
+        add_rule(uri_path=uri_path_add, action='DROP', source_net=source_net,
+                 destination_net=destination_net, protocol='tcp')
         time.sleep(4)
+        execute_test(remote_base_uri, source_net, destination_net, 'tcp')
+        time.sleep(4)
+
         calculate_total_time(i)
-        delete_rule_ping(uri_path_delete, False)
-        delete_rule_ping(uri_path_delete, False)
         time.sleep(4)
 
     df = print_test_port_80_results()
-    df.to_csv(os.path.join(os.path.dirname(abs_folder_path), 'iptables.csv'), index=False)
+    df.to_csv(os.path.join(os.path.dirname(abs_folder_path), 'iptables.csv'), sep=';', index=False)
